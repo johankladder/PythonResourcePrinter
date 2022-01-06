@@ -3,7 +3,8 @@ from base64 import b64decode
 
 class PdfParser:
 
-    def parse(self, base64: str):
+    @staticmethod
+    def parse(base64: str):
         pdf_bytes = b64decode(base64, validate=True)
         if pdf_bytes[0:4] != b'%PDF':
             return None
