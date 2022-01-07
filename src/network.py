@@ -28,7 +28,7 @@ class PrinterQueueNetwork:
         return items
 
     def set_printed(self, item: QueueItem):
-        return self.network.patch(self.base_url + str(item.id) + self.get_authentication_end_fix())
+        return self.network.patch(self.base_url + "/" + str(item.id) + self.get_authentication_end_fix())
 
     def get_authentication_end_fix(self):
         return "?key=" + self.auth_token
