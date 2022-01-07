@@ -24,7 +24,7 @@ class CommandReceiver(object):
         )
         self.ping_url = os.getenv("PING_URL")
 
-    def listen(self, delay=2, ping_minutes=5):
+    def listen(self, delay=2, ping_minutes=1):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
 
