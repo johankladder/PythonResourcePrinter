@@ -11,12 +11,11 @@ from src.parser import PdfParser
 
 class CommandReceiver(object):
 
-    tmp_file = "tmp.pdf"
-    network = Network()
-    last_ping = datetime.datetime.now()
-
     def __init__(self):
         load_dotenv()
+        self.last_ping = datetime.datetime.now()
+        self.tmp_file = "tmp.pdf"
+        self.network = Network()
         self.queue_network = PrinterQueueNetwork(
             base_url=os.getenv("PRINT_QUEUE_BASE_URL"),
             auth_token=os.getenv("AUTH_TOKEN"),
@@ -69,4 +68,4 @@ class CommandReceiver(object):
 
 
 if __name__ == '__main__':
-    fire.Fire(CommandReceiver)
+    fire.Fire(CommandReceiver())
