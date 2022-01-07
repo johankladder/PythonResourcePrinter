@@ -47,14 +47,14 @@ class CommandReceiver(object):
                 # Write to temporary .pdf file:
                 FileSystem.write_file(path=self.tmp_file, file_bytes=pdf_bytes)
 
-                # Print the pdf file:
-                subprocess.run(["lp", self.tmp_file, os.getenv("LP_OPTIONS")])
-
-                # Remove the temporary file:
-                FileSystem.remove_file(path=self.tmp_file)
-
-                # Send status to server:
-                self.queue_network.set_printed(item)
+                # Print the pdf file and send status:
+                try:
+                    subprocess.check_call(["lp", self.tmp_file, os.getenv("LP_OPTIONS")])
+                    self.queue_network.set_printed(item)
+                except subprocess.CalledProcessError:
+                    print("Some error did occur when trying to print")
+                finally:
+                    FileSystem.remove_file(path=self.tmp_file)
 
             time.sleep(delay)
 
