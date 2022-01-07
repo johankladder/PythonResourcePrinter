@@ -10,7 +10,7 @@ given base64 data. An example response for this API is:
           "id": 1,
           "label_base64": "a-base-64-pdf-string"
       },
-      { ... }
+      {}, {}, {}
     ]
 }
 ```
