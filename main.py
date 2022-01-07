@@ -32,7 +32,8 @@ class CommandReceiver(object):
             queue_items = self.queue_network.get_queue()
             self.__ping(ping_minutes)
 
-            print("- Polling succeeded " + str(len(queue_items)) + " found")
+            if len(queue_items) > 0:
+                print(str(len(queue_items)) + " queue-items found")
 
             for item in queue_items:
 
