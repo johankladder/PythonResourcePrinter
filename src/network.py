@@ -1,14 +1,27 @@
+from typing import Optional
 import requests
+from requests import RequestException, Response
 from src.models import QueueItem
 
 
 class Network:
 
-    def get(self, url: str):
-        return requests.get(url)
+    def get(self, url: str) -> Optional[Response]:
+        try:
+            return requests.get(url)
+        except RequestException as e:
+            return self.__handle_exception(url, e)
 
-    def patch(self, url: str):
-        return requests.patch(url)
+    def patch(self, url: str) -> Optional[Response]:
+        try:
+            return requests.patch(url)
+        except RequestException as e:
+            return self.__handle_exception(url, e)
+
+    @staticmethod
+    def __handle_exception(url: str, e: RequestException):
+        print("Request failed for", url, e)
+        return None
 
 
 class PrinterQueueNetwork:
@@ -21,14 +34,20 @@ class PrinterQueueNetwork:
         self.network = network
         self.auth_token = auth_token
 
-    def get_queue(self):
+    def get_queue(self) -> [QueueItem]:
         items = []
-        for item in self.network.get(self.base_url + self.get_authentication_end_fix()).json()["data"]:
-            items.append(QueueItem(queue_id=item[self.id_key], data=item[self.base_64_key]))
-        return items
+        try:
+            for item in self.network.get(self.base_url + self.get_authentication_end_fix()).json()["data"]:
+                items.append(QueueItem(queue_id=item[self.id_key], data=item[self.base_64_key]))
+        finally:
+            return items
 
-    def set_printed(self, item: QueueItem):
-        return self.network.patch(self.base_url + "/" + str(item.id) + self.get_authentication_end_fix())
+    def set_printed(self, item: QueueItem) -> bool:
+        try:
+            self.network.patch(self.base_url + "/" + str(item.id) + self.get_authentication_end_fix())
+            return True
+        finally:
+            return False
 
     def get_authentication_end_fix(self):
         return "?key=" + self.auth_token
