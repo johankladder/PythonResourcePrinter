@@ -28,6 +28,7 @@ class CommandReceiver(object):
     def listen(self, delay=2, ping_minutes=1):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
+        print("Debug mode is: " + "On" if self.debug is True else "Off")
 
         while True:
             queue_items = self.queue_network.get_queue()
@@ -38,6 +39,7 @@ class CommandReceiver(object):
 
             for item in queue_items:
                 if self.debug is False:
+
                     # Parse bytes of base64:
                     pdf_bytes = PdfParser.parse(base64=item.data)
 
@@ -62,7 +64,7 @@ class CommandReceiver(object):
             time.sleep(delay)
 
     def __ping(self, minutes: int):
-        if self.ping_url:
+        if self.ping_url and self.debug is False:
             current_time = datetime.datetime.now()
             minutes_passed = current_time - self.last_ping
             if minutes_passed.total_seconds() / 60 >= minutes:
