@@ -12,7 +12,12 @@ class Printing:
     @staticmethod
     def print(file_path: str, printer: Printer = None):
         printer_option = Printing.get_specific_printer_option(printer)
-        subprocess.check_call(["lp", file_path, os.getenv("LP_OPTIONS")])
+        command = ["lp", file_path, os.getenv("LP_OPTIONS")]
+        if printer_option is not None:
+            command.append(printer_option)
+
+        # Execute print command:
+        subprocess.check_call(command)
 
     @staticmethod
     def get_printer_based_on_location(printer_location: str) -> Printer:
@@ -25,5 +30,4 @@ class Printing:
     def get_specific_printer_option(printer: Printer = None) -> str:
         if printer is not None:
             return "-d " + printer.printer_id
-        return ""
 
