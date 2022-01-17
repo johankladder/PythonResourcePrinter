@@ -7,6 +7,7 @@ import os
 from src.filesystem import FileSystem
 from src.network import PrinterQueueNetwork, Network
 from src.parser import PdfParser
+from distutils.util import strtobool
 
 
 class CommandReceiver(object):
@@ -21,6 +22,7 @@ class CommandReceiver(object):
             auth_token=os.getenv("AUTH_TOKEN"),
             network=self.network
         )
+        self.debug = bool(strtobool(os.getenv('DEBUG', 'False')))
         self.ping_url = os.getenv("PING_URL")
 
     def listen(self, delay=2, ping_minutes=1):
@@ -35,25 +37,27 @@ class CommandReceiver(object):
                 print(str(len(queue_items)) + " queue-items found")
 
             for item in queue_items:
+                if self.debug is False:
+                    # Parse bytes of base64:
+                    pdf_bytes = PdfParser.parse(base64=item.data)
 
-                # Parse bytes of base64:
-                pdf_bytes = PdfParser.parse(base64=item.data)
+                    # If bytes couldn't be formed - jump out:
+                    if pdf_bytes is None:
+                        continue
 
-                # If bytes couldn't be formed - jump out:
-                if pdf_bytes is None:
-                    continue
+                    # Write to temporary .pdf file:
+                    FileSystem.write_file(path=self.tmp_file, file_bytes=pdf_bytes)
 
-                # Write to temporary .pdf file:
-                FileSystem.write_file(path=self.tmp_file, file_bytes=pdf_bytes)
-
-                # Print the pdf file and send status:
-                try:
-                    subprocess.check_call(["lp", self.tmp_file, os.getenv("LP_OPTIONS")])
-                    self.queue_network.set_printed(item)
-                except subprocess.CalledProcessError:
-                    print("Some error did occur when trying to print")
-                finally:
-                    FileSystem.remove_file(path=self.tmp_file)
+                    # Print the pdf file and send status:
+                    try:
+                        subprocess.check_call(["lp", self.tmp_file, os.getenv("LP_OPTIONS")])
+                        self.queue_network.set_printed(item)
+                    except subprocess.CalledProcessError:
+                        print("Some error did occur when trying to print")
+                    finally:
+                        FileSystem.remove_file(path=self.tmp_file)
+                else:
+                    print("Skipping printing " + str(item.id) + " - because of debug")
 
             time.sleep(delay)
 
