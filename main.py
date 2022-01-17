@@ -17,7 +17,6 @@ class CommandReceiver(object):
     def __init__(self):
         load_dotenv()
         self.last_ping = datetime.datetime.now()
-        self.tmp_file = "tmp.pdf"
         self.network = Network()
         self.queue_network = PrinterQueueNetwork(
             base_url=os.getenv("PRINT_QUEUE_BASE_URL"),
@@ -49,18 +48,21 @@ class CommandReceiver(object):
                 if pdf_bytes is None:
                     continue
 
+                # Generate file_path:
+                file_path = FileSystem.generate_file_path(queue_item_id=item.id)
+
                 # Write to temporary .pdf file:
-                FileSystem.write_file(path=self.tmp_file, file_bytes=pdf_bytes)
+                FileSystem.write_file(path=file_path, file_bytes=pdf_bytes)
 
                 # Print the pdf file and send status:
                 try:
                     if self.debug is False:
-                        self.__handle_print(item, pdf_path=self.tmp_file)
+                        self.__handle_print(item, pdf_path=file_path)
 
                 except subprocess.CalledProcessError:
                     print("Some error did occur when trying to print")
                 finally:
-                    FileSystem.remove_file(path=self.tmp_file)
+                    print("Printed item with id: " + str(item.id))
 
             time.sleep(delay)
 
