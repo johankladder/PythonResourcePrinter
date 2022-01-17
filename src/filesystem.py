@@ -4,8 +4,12 @@ import os
 class FileSystem:
 
     @staticmethod
+    def get_dir_prefix() -> str:
+        return "documents/queue-item-"
+
+    @staticmethod
     def generate_file_path(queue_item_id: int) -> str:
-        return os.path.join("documents/queue-item-" + str(queue_item_id) + ".pdf")
+        return os.path.join(FileSystem.get_dir_prefix() + str(queue_item_id) + ".pdf")
 
     @staticmethod
     def write_file(path: str, file_bytes):

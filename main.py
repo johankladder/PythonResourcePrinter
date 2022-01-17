@@ -29,7 +29,9 @@ class CommandReceiver(object):
     def listen(self, delay=2, ping_minutes=1):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
-        print("Debug mode is: " + "On" if self.debug is True else "Off")
+
+        if self.debug is True:
+            print("Debug mode is on")
 
         while True:
             queue_items = self.queue_network.get_queue()
