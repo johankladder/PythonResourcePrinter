@@ -5,9 +5,11 @@ import time
 from dotenv import load_dotenv
 import os
 from src.filesystem import FileSystem
+from src.models import QueueItem
 from src.network import PrinterQueueNetwork, Network
 from src.parser import PdfParser
 from distutils.util import strtobool
+from src.printing import Printing
 
 
 class CommandReceiver(object):
@@ -38,30 +40,32 @@ class CommandReceiver(object):
                 print(str(len(queue_items)) + " queue-items found")
 
             for item in queue_items:
-                if self.debug is False:
+                # Parse bytes of base64:
+                pdf_bytes = PdfParser.parse(base64=item.data)
 
-                    # Parse bytes of base64:
-                    pdf_bytes = PdfParser.parse(base64=item.data)
+                # If bytes couldn't be formed - jump out:
+                if pdf_bytes is None:
+                    continue
 
-                    # If bytes couldn't be formed - jump out:
-                    if pdf_bytes is None:
-                        continue
+                # Write to temporary .pdf file:
+                FileSystem.write_file(path=self.tmp_file, file_bytes=pdf_bytes)
 
-                    # Write to temporary .pdf file:
-                    FileSystem.write_file(path=self.tmp_file, file_bytes=pdf_bytes)
+                # Print the pdf file and send status:
+                try:
+                    if self.debug is False:
+                        self.__handle_print(item, pdf_path=self.tmp_file)
 
-                    # Print the pdf file and send status:
-                    try:
-                        subprocess.check_call(["lp", self.tmp_file, os.getenv("LP_OPTIONS")])
-                        self.queue_network.set_printed(item)
-                    except subprocess.CalledProcessError:
-                        print("Some error did occur when trying to print")
-                    finally:
-                        FileSystem.remove_file(path=self.tmp_file)
-                else:
-                    print("Skipping printing " + str(item.id) + " - because of debug")
+                except subprocess.CalledProcessError:
+                    print("Some error did occur when trying to print")
+                finally:
+                    FileSystem.remove_file(path=self.tmp_file)
 
             time.sleep(delay)
+
+    def __handle_print(self, item: QueueItem, pdf_path: str):
+        queue_printer = Printing.get_printer_based_on_location(printer_location=item.print_location)
+        Printing.print(file_path=pdf_path, printer=queue_printer)
+        self.queue_network.set_printed(item)
 
     def __ping(self, minutes: int):
         if self.ping_url and self.debug is False:
