@@ -12,7 +12,6 @@ class Printing:
     @staticmethod
     def print(file_path: str, printer: Printer = None):
         printer_option = Printing.get_specific_printer_option(printer)
-        print("Printing: " + file_path)
         subprocess.check_call(["lp", file_path, os.getenv("LP_OPTIONS")])
 
     @staticmethod
