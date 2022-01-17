@@ -1,3 +1,4 @@
 .env
 .idea
 documents/*
+src/__pycache__
