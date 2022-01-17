@@ -5,7 +5,7 @@ class FileSystem:
 
     @staticmethod
     def get_dir_prefix() -> str:
-        return "documents/queue-item-"
+        return "/home/pi/PythonResourcePrinter/documents/queue-item-"
 
     @staticmethod
     def generate_file_path(queue_item_id: int) -> str:
