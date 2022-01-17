@@ -42,7 +42,7 @@ class PrinterQueueNetwork:
                 items.append(QueueItem(
                     queue_id=item[self.id_key],
                     data=item[self.base_64_key],
-                    print_location=item[self.print_location_key]
+                    print_location=item.get(self.print_location_key, None)
                 ))
         finally:
             return items
