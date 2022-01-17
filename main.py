@@ -38,6 +38,8 @@ class CommandReceiver(object):
 
             if len(queue_items) > 0:
                 print(str(len(queue_items)) + " queue-items found")
+            else:
+                print("No print jobs found!")
 
             for item in queue_items:
                 # Parse bytes of base64:
