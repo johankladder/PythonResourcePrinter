@@ -12,9 +12,9 @@ class Printing:
     @staticmethod
     def print(file_path: str, printer: Printer):
         printer_option = Printing.get_specific_printer_option(printer)
-        command = ["lp", file_path, os.getenv("LP_OPTIONS") + printer_option]
-        print(command)
-        subprocess.check_call(command)
+        commands = ["lp", file_path, os.getenv("LP_OPTIONS") + printer_option]
+        command = " ".join(commands)
+        os.system(command)
 
     @staticmethod
     def get_printer_based_on_location(printer_location: str) -> Printer:
