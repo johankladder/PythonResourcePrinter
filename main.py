@@ -9,7 +9,7 @@ from src.models import QueueItem
 from src.network import PrinterQueueNetwork, Network
 from src.parser import PdfParser
 from distutils.util import strtobool
-from src.printing import Printing
+from src.printing import Printing, Printer
 
 
 class CommandReceiver(object):
@@ -50,6 +50,13 @@ class CommandReceiver(object):
                 if pdf_bytes is None:
                     continue
 
+                # Retrieve printer:
+                queue_printer = Printing.get_printer_based_on_location(printer_location=item.print_location)
+
+                if queue_printer is None:
+                    print("No suitable printer was found. Please define a printer location or default printer")
+                    continue
+
                 # Generate file_path:
                 file_path = FileSystem.generate_file_path(queue_item_id=item.id)
 
@@ -59,7 +66,7 @@ class CommandReceiver(object):
                 # Print the pdf file and send status:
                 try:
                     if self.debug is False:
-                        self.__handle_print(item, pdf_path=file_path)
+                        self.__handle_print(item, pdf_path=file_path, printer=queue_printer),
 
                 except subprocess.CalledProcessError:
                     print("Some error did occur when trying to print")
@@ -68,9 +75,8 @@ class CommandReceiver(object):
 
             time.sleep(delay)
 
-    def __handle_print(self, item: QueueItem, pdf_path: str):
-        queue_printer = Printing.get_printer_based_on_location(printer_location=item.print_location)
-        Printing.print(file_path=pdf_path, printer=queue_printer)
+    def __handle_print(self, item: QueueItem, pdf_path: str, printer: Printer):
+        Printing.print(file_path=pdf_path, printer=printer)
         self.queue_network.set_printed(item)
 
     def __ping(self, minutes: int):
