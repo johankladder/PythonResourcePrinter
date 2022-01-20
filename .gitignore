@@ -2,3 +2,4 @@
 .idea
 documents/*
 src/__pycache__
+*.pdf
