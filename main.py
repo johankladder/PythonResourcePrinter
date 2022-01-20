@@ -29,7 +29,7 @@ class CommandReceiver(object):
     def print(self, path: str, destination=None):
         queue_printer = Printing.get_printer_based_on_location(printer_location=destination)
         if queue_printer is not None and path is not None:
-            Printing.print(file_path=path, printer=queue_printer)
+            print("Using printer" + queue_printer.printer_id)
 
     def listen(self, delay=2, ping_minutes=1):
         print("Initialised printing server for url: ", self.queue_network.base_url)
