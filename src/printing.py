@@ -27,6 +27,9 @@ class Printing:
             printer_id = os.getenv("PRINTER_LOCATION_" + printer_location, None)
             if printer_id is not None:
                 return Printer(printer_id=printer_id)
+            else:
+                print("Cannot find printer location " + printer_location)
+                print("Try default printer...")
 
         # If not defined, use default printer:
         if default_printer_id is not None:
