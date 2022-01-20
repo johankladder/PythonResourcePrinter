@@ -77,7 +77,7 @@ class CommandReceiver(object):
 
     def __handle_print(self, item: QueueItem, pdf_path: str, printer: Printer):
         Printing.print(file_path=pdf_path, printer=printer)
-        self.queue_network.set_printed(item)
+        #self.queue_network.set_printed(item)
 
     def __ping(self, minutes: int):
         if self.ping_url and self.debug is False:
