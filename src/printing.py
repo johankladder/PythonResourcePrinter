@@ -6,16 +6,13 @@ class Printer:
     def __init__(self, printer_id: str):
         self.printer_id = printer_id
 
+
 class Printing:
 
     @staticmethod
     def print(file_path: str, printer: Printer):
         printer_option = Printing.get_specific_printer_option(printer)
-        command = ["lp", file_path, os.getenv("LP_OPTIONS")]
-        if printer_option is not None:
-            command.append(printer_option)
-
-        # Execute print command:
+        command = ["lp", file_path, os.getenv("LP_OPTIONS") + printer_option]
         subprocess.check_call(command)
 
     @staticmethod
@@ -24,7 +21,7 @@ class Printing:
 
         # Check if the printer location is defined is set up:
         if printer_location is not None:
-            printer_id = os.getenv("PRINTER_LOCATION_" + printer_location, None)
+            printer_id = os.getenv("PRINTER_LOCATION_" + str(printer_location), None)
             if printer_id is not None:
                 return Printer(printer_id=printer_id)
             else:
@@ -37,5 +34,5 @@ class Printing:
 
     @staticmethod
     def get_specific_printer_option(printer: Printer) -> str:
-        return "-d " + printer.printer_id
+        return " -d " + printer.printer_id
 

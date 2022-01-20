@@ -26,7 +26,7 @@ class CommandReceiver(object):
         self.debug = bool(strtobool(os.getenv('DEBUG', 'False')))
         self.ping_url = os.getenv("PING_URL")
 
-    def listen(self, delay=2, ping_minutes=1):
+    def listen(self, delay=60, ping_minutes=1):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
 
@@ -68,8 +68,8 @@ class CommandReceiver(object):
                     if self.debug is False:
                         self.__handle_print(item, pdf_path=file_path, printer=queue_printer),
 
-                except subprocess.CalledProcessError:
-                    print("Some error did occur when trying to print")
+                except subprocess.CalledProcessError as e:
+                    print("Some error did occur when trying to print", e)
                 finally:
                     print("Printed item with id: " + str(item.id))
 
