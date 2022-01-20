@@ -25,11 +25,11 @@ class Printing:
             if printer_id is not None:
                 return Printer(printer_id=printer_id)
             else:
-                print("Cannot find printer location " + printer_location)
-                print("Try default printer...")
+                print("Cannot find printer location " + str(printer_location))
 
         # If not defined, use default printer:
         if default_printer_id is not None:
+            print("Using default printer")
             return Printer(printer_id=default_printer_id)
 
     @staticmethod
