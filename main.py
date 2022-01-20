@@ -26,7 +26,7 @@ class CommandReceiver(object):
         self.debug = bool(strtobool(os.getenv('DEBUG', 'False')))
         self.ping_url = os.getenv("PING_URL")
 
-    def listen(self, delay=60, ping_minutes=1):
+    def listen(self, delay=2, ping_minutes=1):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
 
@@ -77,7 +77,7 @@ class CommandReceiver(object):
 
     def __handle_print(self, item: QueueItem, pdf_path: str, printer: Printer):
         Printing.print(file_path=pdf_path, printer=printer)
-        #self.queue_network.set_printed(item)
+        self.queue_network.set_printed(item)
 
     def __ping(self, minutes: int):
         if self.ping_url and self.debug is False:
