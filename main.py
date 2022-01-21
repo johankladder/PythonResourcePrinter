@@ -5,7 +5,7 @@ import time
 from dotenv import load_dotenv
 import os
 from src.filesystem import FileSystem
-from src.handlers import StatusHandler
+from src.handlers import StatusHandler, DebugPublisher, Status
 from src.models import QueueItem
 from src.network import PrinterQueueNetwork, Network
 from src.parser import PdfParser
@@ -26,6 +26,8 @@ class CommandReceiver(object):
         )
         self.debug = bool(strtobool(os.getenv('DEBUG', 'False')))
         self.ping_url = os.getenv("PING_URL")
+        self.status_handler = StatusHandler()
+        self.status_handler.subscribe(publisher=DebugPublisher())
 
     def print(self, path: str, destination=None):
         queue_printer = Printing.get_printer_based_on_location(printer_location=destination)
@@ -37,17 +39,13 @@ class CommandReceiver(object):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
 
-        if self.debug is True:
-            print("Debug mode is on")
-
         while True:
             queue_items = self.queue_network.get_queue()
             self.__ping(ping_minutes)
+            self.status_handler.publish(status=Status.IDLE)
 
             if len(queue_items) > 0:
                 print(str(len(queue_items)) + " queue-items found")
-            else:
-                print("No print jobs found!")
 
             for item in queue_items:
                 # Parse bytes of base64:
@@ -78,12 +76,14 @@ class CommandReceiver(object):
                         self.__handle_print(item, pdf_path=file_path, printer=queue_printer),
                 except subprocess.CalledProcessError as e:
                     print("Some error did occur when trying to print", e)
+                    self.status_handler.publish(status=Status.ERROR)
                 finally:
                     print("Printed item with id: " + str(item.id))
 
             time.sleep(delay)
 
     def __handle_print(self, item: QueueItem, pdf_path: str, printer: Printer):
+        self.status_handler.publish(status=Status.PRINTING)
         Printing.print(file_path=pdf_path, printer=printer)
         self.queue_network.set_printed(item)
 
