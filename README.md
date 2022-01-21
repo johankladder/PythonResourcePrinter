@@ -1,4 +1,4 @@
-# PythonResourcePrinter
+# PythonResourcePrinter     [![CircleCI](https://circleci.com/gh/johankladder/PythonResourcePrinter/tree/master.svg?style=svg)](https://circleci.com/gh/johankladder/PythonResourcePrinter/tree/master)
 A package to print external labels on a local labelprinter. This application is intended to run on a Raspberry Pi.
 The application will poll a API endpoint for print jobs and create printable .pdf files from the 
 given base64 data. An example response for this API is:
