@@ -8,7 +8,8 @@ given base64 data. An example response for this API is:
     "data": [
       {
           "id": 1,
-          "label_base64": "a-base-64-pdf-string"
+          "label_base64": "a-base-64-pdf-string",
+          "print_location": 1 // (Optional)
       },
       {}, {}, {}
     ]
@@ -24,8 +25,8 @@ API endpoint for handling remote queues.
 See the .env-example for possible values. In general this would be:
 ```
 PRINT_QUEUE_BASE_URL=https://api.printqueue.nl/get-queue
-AUTH_TOKEN=KlaDDeR
-LP_OPTIONS=-o orientation-requested=4
+AUTH_TOKEN=secret
+LP_OPTIONS=-o landscape -o fit-to-page -o media=Custom.102x152mm
 PING_URL=https://beats.envoyer.io/heartbeat/a-heart-beat-id
 PRINTER_LOCATION_DEFAULT=Brother
 PRINTER_LOCATION_[*]=
@@ -41,8 +42,15 @@ in de REST response with the `print_location` field. The location should be defi
 The server will first look for a printer location with the named value. If none was given (or found) it will be printed to the 
 default printer.
 
-## Run:
+## Run the server:
 `python3 main.py listen`
 
-## Possible flags:
-`python3 main.py listen --help`
+## Print single file:
+`python3 main.py print path/file.pdf [optional location]`
+
+## Possible flags, see help:
+```
+python main.py listen --help
+python main.py print --help
+```
+
