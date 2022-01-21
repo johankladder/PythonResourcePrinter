@@ -5,6 +5,7 @@ import time
 from dotenv import load_dotenv
 import os
 from src.filesystem import FileSystem
+from src.handlers import StatusHandler
 from src.models import QueueItem
 from src.network import PrinterQueueNetwork, Network
 from src.parser import PdfParser
@@ -63,6 +64,8 @@ class CommandReceiver(object):
                     print("No suitable printer was found. Please define a printer location or default printer")
                     continue
 
+                print("Using printer: " + queue_printer.printer_id)
+
                 # Generate file_path:
                 file_path = FileSystem.generate_file_path(queue_item_id=item.id)
 
@@ -73,7 +76,6 @@ class CommandReceiver(object):
                 try:
                     if self.debug is False:
                         self.__handle_print(item, pdf_path=file_path, printer=queue_printer),
-
                 except subprocess.CalledProcessError as e:
                     print("Some error did occur when trying to print", e)
                 finally:

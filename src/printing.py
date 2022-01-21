@@ -19,6 +19,7 @@ class Printing:
     @staticmethod
     def get_printer_based_on_location(printer_location: str) -> Printer:
         default_printer_id = os.getenv("PRINTER_LOCATION_DEFAULT", None)
+        print(printer_location)
 
         # Check if the printer location is defined is set up:
         if printer_location is not None:
