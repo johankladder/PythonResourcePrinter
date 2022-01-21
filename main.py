@@ -15,6 +15,8 @@ from src.printing import Printing, Printer
 
 class CommandReceiver(object):
 
+    debug_publisher = DebugPublisher()
+
     def __init__(self):
         load_dotenv()
         self.last_ping = datetime.datetime.now()
@@ -26,14 +28,22 @@ class CommandReceiver(object):
         )
         self.debug = bool(strtobool(os.getenv('DEBUG', 'False')))
         self.ping_url = os.getenv("PING_URL")
+        self.__initialise_status_handler()
+
+    def __initialise_status_handler(self):
         self.status_handler = StatusHandler()
-        self.status_handler.subscribe(publisher=DebugPublisher())
+        self.status_handler.subscribe(publisher=self.debug_publisher)
 
     def print(self, path: str, destination=None):
+        self.status_handler.publish(status=Status.IDLE)
         queue_printer = Printing.get_printer_based_on_location(printer_location=destination)
+
         if queue_printer is not None and path is not None:
             print("Using printer: " + queue_printer.printer_id)
+            self.status_handler.publish(status=Status.PRINTING)
             Printing.print(file_path=path, printer=queue_printer)
+
+        self.status_handler.publish(status=Status.IDLE)
 
     def listen(self, delay=2, ping_minutes=1):
         print("Initialised printing server for url: ", self.queue_network.base_url)
@@ -94,7 +104,7 @@ class CommandReceiver(object):
             if minutes_passed.total_seconds() / 60 >= minutes:
                 self.last_ping = current_time
                 self.network.get(self.ping_url)
-                print("- Pinged to the pinging url")
+                self.status_handler.publish(status=Status.PINGING)
 
 
 if __name__ == '__main__':

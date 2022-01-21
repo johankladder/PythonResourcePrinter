@@ -1,10 +1,6 @@
 import os
-import subprocess
 
-
-class Printer:
-    def __init__(self, printer_id: str):
-        self.printer_id = printer_id
+from src.models import Printer
 
 
 class Printing:

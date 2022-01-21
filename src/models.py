@@ -8,3 +8,8 @@ class QueueItem:
         self.data = data
         self.print_location = print_location
 
+
+class Printer:
+    def __init__(self, printer_id: str):
+        self.printer_id = printer_id
+

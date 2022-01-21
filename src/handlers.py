@@ -5,6 +5,7 @@ class Status(Enum):
     IDLE = 1
     PRINTING = 2
     ERROR = 3
+    PINGING = 4
 
 
 class HandlerPublisher:
@@ -19,9 +20,10 @@ class DebugPublisher(HandlerPublisher):
         messages = {
             Status.IDLE: "IDLE",
             Status.PRINTING: "PRINTING",
-            Status.ERROR: "ERROR"
+            Status.ERROR: "ERROR",
+            Status.PINGING: "PINGING"
         }
-        print("Debugging - Printer status: " + messages[status])
+        print("Debugging - status: " + messages[status])
 
 
 class StatusHandler:
