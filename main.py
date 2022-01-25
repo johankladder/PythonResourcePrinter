@@ -4,6 +4,9 @@ import fire
 import time
 from dotenv import load_dotenv
 import os
+
+from requests import RequestException
+
 from src.filesystem import FileSystem
 from src.handlers import StatusHandler, DebugPublisher, Status
 from src.models import QueueItem
@@ -50,7 +53,13 @@ class CommandReceiver(object):
         print("Print server started - polling every " + str(delay) + " seconds")
 
         while True:
-            queue_items = self.queue_network.get_queue()
+            try:
+                queue_items = self.queue_network.get_queue()
+            except RequestException:
+                self.status_handler.publish(status=Status.ERROR)
+                time.sleep(2)
+                continue
+
             self.__ping(ping_minutes)
             self.status_handler.publish(status=Status.IDLE)
 
@@ -87,6 +96,7 @@ class CommandReceiver(object):
                 except subprocess.CalledProcessError as e:
                     print("Some error did occur when trying to print", e)
                     self.status_handler.publish(status=Status.ERROR)
+                    time.sleep(0.5)
                 finally:
                     print("Printed item with id: " + str(item.id))
 
@@ -105,7 +115,6 @@ class CommandReceiver(object):
                 self.last_ping = current_time
                 self.network.get(self.ping_url)
                 self.status_handler.publish(status=Status.PINGING)
-
 
 if __name__ == '__main__':
     fire.Fire(CommandReceiver())

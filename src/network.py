@@ -6,7 +6,10 @@ from src.models import QueueItem
 
 class Network:
 
-    def get(self, url: str) -> Optional[Response]:
+    def get(self, url: str, handle: bool = True) -> Optional[Response]:
+        if handle is False:
+            return requests.get(url)
+
         try:
             return requests.get(url)
         except RequestException as e:
@@ -37,15 +40,15 @@ class PrinterQueueNetwork:
 
     def get_queue(self) -> [QueueItem]:
         items = []
-        try:
-            for item in self.network.get(self.base_url + self.get_authentication_end_fix()).json()["data"]:
-                items.append(QueueItem(
-                    queue_id=item[self.id_key],
-                    data=item[self.base_64_key],
-                    print_location=item.get(self.print_location_key, None)
-                ))
-        finally:
-            return items
+
+        for item in self.network.get(self.base_url + self.get_authentication_end_fix(), handle=False).json()["data"]:
+            items.append(QueueItem(
+                queue_id=item[self.id_key],
+                data=item[self.base_64_key],
+                print_location=item.get(self.print_location_key, None)
+                )
+            )
+        return items
 
     def set_printed(self, item: QueueItem) -> bool:
         try:
