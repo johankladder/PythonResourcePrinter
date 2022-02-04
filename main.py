@@ -4,12 +4,9 @@ import fire
 import time
 from dotenv import load_dotenv
 import os
-
 from requests import RequestException
-
 from src.filesystem import FileSystem
 from src.handlers import StatusHandler, DebugPublisher, Status
-from src.models import QueueItem
 from src.network import PrinterQueueNetwork, Network
 from src.parser import PdfParser
 from distutils.util import strtobool
@@ -17,7 +14,6 @@ from src.printing import Printing, Printer
 
 
 class CommandReceiver(object):
-
     debug_publisher = DebugPublisher()
 
     def __init__(self):
@@ -48,6 +44,10 @@ class CommandReceiver(object):
 
         self.status_handler.publish(status=Status.IDLE)
 
+    def split(self, path: str, n_mix: int = 0):
+        paths = PdfParser.split_pdf(base_path=path, split_at_page=n_mix)
+        print(paths)
+
     def listen(self, delay=2, ping_minutes=1):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
@@ -74,25 +74,34 @@ class CommandReceiver(object):
                 if pdf_bytes is None:
                     continue
 
-                # Retrieve printer:
-                queue_printer = Printing.get_printer_based_on_location(printer_location=item.print_location)
-
-                if queue_printer is None:
-                    print("No suitable printer was found. Please define a printer location or default printer")
+                # Retrieve printers:
+                queue_printers: [str, Printer] = Printing.get_printers(item)
+                if queue_printers['default'] is None:
+                    print("No suitable default printer was found. Please define a printer location or default printer")
                     continue
 
-                print("Using printer: " + queue_printer.printer_id)
+                # Define printers:
+                default_printer = queue_printers['default']
+                mix_printer = queue_printers['mix']
 
-                # Generate file_path:
-                file_path = FileSystem.generate_file_path(queue_item_id=item.id)
+                # Generate file_paths:
+                file_path_tmp = FileSystem.generate_file_path(queue_item_id=item.id)
 
                 # Write to temporary .pdf file:
-                FileSystem.write_file(path=file_path, file_bytes=pdf_bytes)
+                FileSystem.write_file(path=file_path_tmp, file_bytes=pdf_bytes)
+
+                # Split temporary file in mix and default:
+                paths = PdfParser.split_pdf(base_path=file_path_tmp, split_at_page=item.n_mix)
 
                 # Print the pdf file and send status:
                 try:
                     if self.debug is False:
-                        self.__handle_print(item, pdf_path=file_path, printer=queue_printer),
+                        if paths[0] is not None:
+                            self.__handle_print(pdf_path=paths[0], printer=default_printer)
+                        if len(paths) > 1 and paths[1] is not None:
+                            self.__handle_print(pdf_path=paths[1], printer=mix_printer)
+                        self.queue_network.set_printed(item)
+
                 except subprocess.CalledProcessError as e:
                     print("Some error did occur when trying to print", e)
                     self.status_handler.publish(status=Status.ERROR)
@@ -102,10 +111,9 @@ class CommandReceiver(object):
 
             time.sleep(delay)
 
-    def __handle_print(self, item: QueueItem, pdf_path: str, printer: Printer):
+    def __handle_print(self, pdf_path: str, printer: Printer):
         self.status_handler.publish(status=Status.PRINTING)
         Printing.print(file_path=pdf_path, printer=printer)
-        self.queue_network.set_printed(item)
 
     def __ping(self, minutes: int):
         if self.ping_url and self.debug is False:
@@ -115,6 +123,7 @@ class CommandReceiver(object):
                 self.last_ping = current_time
                 self.network.get(self.ping_url)
                 self.status_handler.publish(status=Status.PINGING)
+
 
 if __name__ == '__main__':
     fire.Fire(CommandReceiver())

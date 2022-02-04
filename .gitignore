@@ -3,3 +3,4 @@
 documents/*
 src/__pycache__
 *.pdf
+*.db

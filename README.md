@@ -10,13 +10,17 @@ given base64 data. An example response for this API is:
           "id": 1,
           "label_base64": "a-base-64-pdf-string",
           "print_location": 1 // (Optional)
+          "print_location_mix": 2 // (Optional)
+          "n_mix": 3 // (Optional)
       },
       {}, {}, {}
     ]
 }
 ```
 The server will send this .pdf to the default printer with help of CUPS (https://www.cups.org/). After printing it will perform a PATCH request to the 
-API endpoint for handling remote queues.
+API endpoint for handling remote queues. When given the n_mix key, the server will split the provided pdf into mix labels and 
+default labels. The mix labels will then be printed to the mix printer (if provided, otherwise to the given print_location) and the default 
+labels to the base printer
 
 ## Install needed dependencies
 `pip3 install -r requirements.txt`
@@ -48,9 +52,13 @@ default printer.
 ## Print single file:
 `python3 main.py print path/file.pdf [optional location]`
 
+## Split single file:
+`python3 main.py split path/file.pdf [optional n_mix]`
+
 ## Possible flags, see help:
 ```
 python main.py listen --help
 python main.py print --help
+python main.py split --help
 ```
 

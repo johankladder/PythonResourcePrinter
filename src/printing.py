@@ -1,6 +1,6 @@
 import os
 
-from src.models import Printer
+from src.models import Printer, QueueItem
 
 
 class Printing:
@@ -15,7 +15,6 @@ class Printing:
     @staticmethod
     def get_printer_based_on_location(printer_location: str) -> Printer:
         default_printer_id = os.getenv("PRINTER_LOCATION_DEFAULT", None)
-        print(printer_location)
 
         # Check if the printer location is defined is set up:
         if printer_location is not None:
@@ -29,6 +28,13 @@ class Printing:
         if default_printer_id is not None:
             print("Using default printer")
             return Printer(printer_id=default_printer_id)
+
+    @staticmethod
+    def get_printers(item: QueueItem) -> [str, Printer]:
+        return {
+            'default': Printing.get_printer_based_on_location(printer_location=item.print_location),
+            'mix': Printing.get_printer_based_on_location(printer_location=item.print_location_mix),
+        }
 
     @staticmethod
     def get_specific_printer_option(printer: Printer) -> str:
