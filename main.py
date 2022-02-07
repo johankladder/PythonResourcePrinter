@@ -53,7 +53,7 @@ class CommandReceiver(object):
                 queue_items = self.queue_network.get_queue()
             except RequestException:
                 self.status_handler.publish(status=Status.ERROR)
-                time.sleep(2)
+                time.sleep(1)
                 continue
 
             self.__ping(ping_minutes)
@@ -106,7 +106,7 @@ class CommandReceiver(object):
                 except subprocess.CalledProcessError as e:
                     print("Some error did occur when trying to print", e)
                     self.status_handler.publish(status=Status.ERROR)
-                    time.sleep(0.5)
+                    time.sleep(1.0)
                 finally:
                     print("Printed item with id: " + str(item.id))
 
