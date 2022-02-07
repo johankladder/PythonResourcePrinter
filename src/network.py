@@ -45,15 +45,16 @@ class PrinterQueueNetwork:
         items = []
 
         for item in self.network.get(self.base_url + self.get_authentication_end_fix(), handle=False).json()["data"]:
-            items.append(QueueItem(
-                queue_id=item[self.id_key],
-                data=item[self.base_64_key],
-                print_location=item.get(self.print_location_key, None),
-                print_location_mix=item.get(self.print_location_mix_key, item.get(self.print_location_key, None)),
-                n_mix=item.get(self.n_mix, 0),
-                print_items=item.get(self.print_items_key, True),
-                print_mix=item.get(self.print_mix_key, True)
-            )
+            items.append(
+                QueueItem(
+                    queue_id=item[self.id_key],
+                    data=item[self.base_64_key],
+                    print_location=item.get(self.print_location_key, None),
+                    print_location_mix=item.get(self.print_location_mix_key, item.get(self.print_location_key, None)),
+                    n_mix=item.get(self.n_mix, 0),
+                    print_items=bool(item.get(self.print_items_key, True)),
+                    print_mix=bool(item.get(self.print_mix_key, True))
+                )
             )
         return items
 
