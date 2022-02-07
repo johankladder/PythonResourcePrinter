@@ -98,8 +98,9 @@ class CommandReceiver(object):
                     if self.debug is False:
                         if paths[0] is not None and item.print_items is True:
                             self.__handle_print(pdf_path=paths[0], printer=default_printer)
-                        if len(paths) > 1 and paths[1] is not None and item.print_mix is True:
-                            self.__handle_print(pdf_path=paths[1], printer=mix_printer)
+                        if len(paths) > 1:
+                            if paths[1] is not None and item.print_mix is True:
+                                self.__handle_print(pdf_path=paths[1], printer=mix_printer)
                         self.queue_network.set_printed(item)
 
                 except subprocess.CalledProcessError as e:
