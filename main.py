@@ -44,10 +44,6 @@ class CommandReceiver(object):
 
         self.status_handler.publish(status=Status.IDLE)
 
-    def split(self, path: str, n_mix: int = 0):
-        paths = PdfParser.split_pdf(base_path=path, split_at_page=n_mix)
-        print(paths)
-
     def listen(self, delay=2, ping_minutes=1):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
@@ -94,6 +90,10 @@ class CommandReceiver(object):
                 paths = PdfParser.split_pdf(base_path=file_path_tmp, split_at_page=item.n_mix)
 
                 # Print the pdf file and send status:
+                print("Item print items: ", item.print_items)
+                print("Item print mix: ", item.print_mix)
+                print("Printable paths: ", paths)
+
                 try:
                     if self.debug is False:
                         if paths[0] is not None and item.print_items is True:
