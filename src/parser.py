@@ -45,7 +45,8 @@ class PdfParser:
         if output_pages <= 0:
             base_path = None
         else:
-            with open(base_path, "wb") as outputStream:
+            with open(base_path.replace(".pdf", "-items.pdf"), "wb") as outputStream:
+                print(output_pages)
                 output_base.write(outputStream)
 
         return [base_path, output_path]

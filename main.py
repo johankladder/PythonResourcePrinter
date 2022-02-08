@@ -93,6 +93,8 @@ class CommandReceiver(object):
                 print("Item print items: ", item.print_items)
                 print("Item print mix: ", item.print_mix)
                 print("Printable paths: ", paths)
+                print("Print items:", paths[0] is not None and item.print_items is True)
+                print("Print mix:", len(paths) > 1 and paths[1] is not None and item.print_mix is True)
 
                 try:
                     if self.debug is False:
@@ -102,6 +104,8 @@ class CommandReceiver(object):
                             if paths[1] is not None and item.print_mix is True:
                                 self.__handle_print(pdf_path=paths[1], printer=mix_printer)
                         self.queue_network.set_printed(item)
+                    else:
+                        time.sleep(3.0)
 
                 except subprocess.CalledProcessError as e:
                     print("Some error did occur when trying to print", e)
