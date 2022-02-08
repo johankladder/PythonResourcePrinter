@@ -59,7 +59,7 @@ class WLEDPublisher(HandlerPublisher):
             Status.OFF: "&T=0",
             Status.ON: "&T=1&FX=50&SX=84&CL=h00FF00&C2=000000&C3=000000"
         }
-        return "" + color_map.get(status)
+        return "&A=255" + color_map.get(status)
 
 
 class StatusHandler:
