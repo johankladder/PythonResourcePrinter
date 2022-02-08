@@ -41,14 +41,15 @@ class PdfParser:
                 output_pages = output_pages + 1
                 output_base.addPage(input_pdf.getPage(i))
 
+        items_path = base_path.replace(".pdf", "-items.pdf")
+
         # update base path file if any pages left, otherwise return None
         if output_pages <= 0:
-            base_path = None
+            items_path = None
         else:
-            with open(base_path.replace(".pdf", "-items.pdf"), "wb") as outputStream:
+            with open(items_path, "wb") as outputStream:
                 print(output_pages)
                 output_base.write(outputStream)
 
-        path = base_path.replace(".pdf", "-items.pdf")
-        return [path, output_path]
+        return [items_path, output_path]
 
