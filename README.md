@@ -34,6 +34,7 @@ LP_OPTIONS=-o landscape -o fit-to-page -o media=Custom.102x152mm
 PING_URL=https://beats.envoyer.io/heartbeat/a-heart-beat-id
 PRINTER_LOCATION_DEFAULT=Brother
 PRINTER_LOCATION_[*]=
+WLED_IP=*.*.*.*
 ```
 
 ## Help with .env
@@ -58,10 +59,15 @@ default printer.
 ## Remove documents:
 `python3 main.py clean`
 
+## Test wled:
+`python3 main.py wled [status]`
+
+
 ## Possible flags, see help:
 ```
 python main.py listen --help
 python main.py print --help
 python main.py split --help
+python main.py wled --help
 ```
 
