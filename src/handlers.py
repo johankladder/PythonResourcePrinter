@@ -44,7 +44,7 @@ class WLEDPublisher(HandlerPublisher):
     def handle(self, status: Status):
         if self.previous_status is not status:
             self.network.get(
-                url="http://" + self.address + "/win" + self.__get_api_values(status),
+                url=self.address + "/win" + self.__get_api_values(status),
                 handle=True
             )
             self.previous_status = status
