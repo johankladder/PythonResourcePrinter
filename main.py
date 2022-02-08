@@ -44,6 +44,11 @@ class CommandReceiver(object):
 
         self.status_handler.publish(status=Status.IDLE)
 
+    def clean(self):
+        files = FileSystem.get_all_filepaths(path=FileSystem.get_documents_dir())
+        FileSystem.remove_files(files)
+        print("Removed " + str(len(files)) + " files")
+
     def listen(self, delay=2, ping_minutes=1):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
@@ -89,12 +94,7 @@ class CommandReceiver(object):
                 # Split temporary file in mix and default:
                 paths = PdfParser.split_pdf(base_path=file_path_tmp, split_at_page=item.n_mix)
 
-                # Print the pdf file and send status:
-                print("Item print items: ", item.print_items)
-                print("Item print mix: ", item.print_mix)
-                print("Printable paths: ", paths)
-                print("Print items:", paths[0] is not None and item.print_items is True)
-                print("Print mix:", len(paths) > 1 and paths[1] is not None and item.print_mix is True)
+                self.__debug_messages(item, paths)
 
                 try:
                     if self.debug is False:
@@ -119,6 +119,14 @@ class CommandReceiver(object):
     def __handle_print(self, pdf_path: str, printer: Printer):
         self.status_handler.publish(status=Status.PRINTING)
         Printing.print(file_path=pdf_path, printer=printer)
+
+    def __debug_messages(self, item, paths: [str]):
+        if self.debug is True:
+            print("Item print items: ", item.print_items)
+            print("Item print mix: ", item.print_mix)
+            print("Printable paths: ", paths)
+            print("Print items:", paths[0] is not None and item.print_items is True)
+            print("Print mix:", len(paths) > 1 and paths[1] is not None and item.print_mix is True)
 
     def __ping(self, minutes: int):
         if self.ping_url and self.debug is False:

@@ -43,7 +43,7 @@ class PdfParser:
 
         items_path = base_path.replace(".pdf", "-items.pdf")
 
-        # update base path file if any pages left, otherwise return None
+        # Update base path file if any pages left, otherwise return None
         if output_pages <= 0:
             items_path = None
         else:

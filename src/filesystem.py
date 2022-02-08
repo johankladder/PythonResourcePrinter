@@ -1,11 +1,17 @@
 import os
+from os import listdir
+from os.path import isfile, join
 
 
 class FileSystem:
 
     @staticmethod
+    def get_documents_dir() -> str:
+        return os.getcwd() + "/documents"
+
+    @staticmethod
     def get_dir_prefix() -> str:
-        return os.getcwd() + "/documents/queue-item-"
+        return FileSystem.get_documents_dir() + "/queue-item-"
 
     @staticmethod
     def generate_file_path(queue_item_id: int) -> str:
@@ -23,3 +29,11 @@ class FileSystem:
         if os.path.isfile(path):
             os.remove(path)
 
+    @staticmethod
+    def remove_files(paths: [str]):
+        for path in paths:
+            FileSystem.remove_file(path)
+
+    @staticmethod
+    def get_all_filepaths(path: str):
+        return [path + "/" + f for f in listdir(path) if isfile(join(path, f))]
