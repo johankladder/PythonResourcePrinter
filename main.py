@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 from requests import RequestException
 from src.filesystem import FileSystem
-from src.handlers import StatusHandler, DebugPublisher, Status
+from src.handlers import StatusHandler, DebugPublisher, Status, WLEDPublisher
 from src.network import PrinterQueueNetwork, Network
 from src.parser import PdfParser
 from distutils.util import strtobool
@@ -15,6 +15,7 @@ from src.printing import Printing, Printer
 
 class CommandReceiver(object):
     debug_publisher = DebugPublisher()
+    wled_publisher = WLEDPublisher()
 
     def __init__(self):
         load_dotenv()
@@ -33,6 +34,10 @@ class CommandReceiver(object):
         self.status_handler = StatusHandler()
         self.status_handler.subscribe(publisher=self.debug_publisher)
 
+        if os.getenv("WLED_IP") is not None:
+            self.status_handler.subscribe(publisher=self.wled_publisher)
+            self.wled_publisher.address = os.getenv("WLED_IP")
+
     def print(self, path: str, destination=None):
         self.status_handler.publish(status=Status.IDLE)
         queue_printer = Printing.get_printer_based_on_location(printer_location=destination)
@@ -43,6 +48,9 @@ class CommandReceiver(object):
             Printing.print(file_path=path, printer=queue_printer)
 
         self.status_handler.publish(status=Status.IDLE)
+
+    async def wled(self, status: int = 1):
+        self.wled_publisher.handle(Status(status))
 
     def clean(self):
         files = FileSystem.get_all_filepaths(path=FileSystem.get_documents_dir())
@@ -134,8 +142,8 @@ class CommandReceiver(object):
             minutes_passed = current_time - self.last_ping
             if minutes_passed.total_seconds() / 60 >= minutes:
                 self.last_ping = current_time
-                self.network.get(self.ping_url)
                 self.status_handler.publish(status=Status.PINGING)
+                self.network.get(self.ping_url)
 
 
 if __name__ == '__main__':
