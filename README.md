@@ -55,6 +55,9 @@ default printer.
 ## Split single file:
 `python3 main.py split path/file.pdf [optional n_mix]`
 
+## Remove documents:
+`python3 main.py clean`
+
 ## Possible flags, see help:
 ```
 python main.py listen --help
