@@ -49,5 +49,6 @@ class PdfParser:
                 print(output_pages)
                 output_base.write(outputStream)
 
-        return [base_path, output_path]
+        path = base_path.replace(".pdf", "-items.pdf")
+        return [path, output_path]
 
