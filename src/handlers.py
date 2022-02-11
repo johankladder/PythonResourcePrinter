@@ -34,6 +34,14 @@ class DebugPublisher(HandlerPublisher):
 
 
 class WLEDPublisher(HandlerPublisher):
+    preset_map = {
+        Status.IDLE: 2,
+        Status.ERROR: 3,
+        Status.PRINTING: 4,
+        Status.ON: 5,
+        Status.OFF: 6,
+        Status.PINGING: 7,
+    }
 
     network = Network()
     address: str
@@ -50,29 +58,32 @@ class WLEDPublisher(HandlerPublisher):
                 self.network.get(
                     url=self.address + "/win" + self.__get_api_values(
                         status=status,
-                        is_on=response.json()['state']['on'] is True
+                        is_on=response.json()['state']['on'] is True,
+                        current_preset=response.json()['state']['ps']
                     ),
                     handle=True,
                 )
 
         self.previous_status = status
 
-    @staticmethod
-    def __get_api_values(status: Status, is_on: bool = False) -> str:
-        color_map = {
-            Status.IDLE: "&PL=2",
-            Status.ERROR: "&PL=3",
-            Status.PRINTING: "&PL=4",
-            Status.PINGING: "",
-            Status.OFF: "&T=0",
-            Status.ON: "&T=1&PL=5"
-        }
-
+    def __get_api_values(self, status: Status, is_on: bool, current_preset: int) -> str:
         if status is not Status.ON:
             if is_on is False:
                 return ""
 
-        return color_map.get(status)
+        api_values = ""
+        preset = self.preset_map.get(status)
+        if preset is not None:
+            api_values += ("&PL=" + str(preset))
+
+        if status is Status.ON:
+            api_values += "&T=1"
+
+        if preset == current_preset:
+            print("Already presented")
+            return ""
+
+        return api_values
 
 
 class StatusHandler:
@@ -84,6 +95,3 @@ class StatusHandler:
     def publish(self, status: Status):
         for publisher in self.subscribers:
             publisher.handle(status=status)
-
-
-
