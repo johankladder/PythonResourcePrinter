@@ -57,7 +57,7 @@ class CommandReceiver(object):
         FileSystem.remove_files(files)
         print("Removed " + str(len(files)) + " files")
 
-    def listen(self, delay=2, ping_minutes=1):
+    def listen(self, delay=2, ping_minutes=5):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
 
