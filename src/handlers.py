@@ -1,6 +1,4 @@
 from enum import Enum
-import asyncio
-from wled import WLED
 
 from src.network import Network
 

@@ -61,6 +61,9 @@ class CommandReceiver(object):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
 
+        self.status_handler.publish(status=Status.ON)
+        time.sleep(5.0)
+
         while True:
             try:
                 queue_items = self.queue_network.get_queue()
