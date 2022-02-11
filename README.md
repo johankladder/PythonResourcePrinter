@@ -47,6 +47,24 @@ in de REST response with the `print_location` field. The location should be defi
 The server will first look for a printer location with the named value. If none was given (or found) it will be printed to the 
 default printer.
 
+## WLED
+The server also supports WLED. Please provide your own custom presets within the app. Also set the WLED ip in the environment.
+The server will then look up the current visual preset and send the matching preset to indicate a status update.
+The status-presets are mapped in the following way:
+
+```python
+    preset_map = {
+        Status.IDLE: 2,
+        Status.ERROR: 3,
+        Status.PRINTING: 4,
+        Status.ON: 5,
+        Status.OFF: 6,
+        Status.PINGING: 7,
+    }
+```
+
+The status on will also force WLED to turn the lights on.
+
 ## Run the server:
 `python3 main.py listen`
 
