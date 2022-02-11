@@ -65,7 +65,7 @@ class WLEDPublisher(HandlerPublisher):
             Status.IDLE: "&PL=2",
             Status.ERROR: "&PL=3",
             Status.PRINTING: "&PL=4",
-            Status.PINGING: "&PL=5",
+            Status.PINGING: "",
             Status.OFF: "&T=0",
             Status.ON: "&T=1&PL=5"
         }
