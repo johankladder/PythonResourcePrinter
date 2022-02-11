@@ -80,7 +80,6 @@ class WLEDPublisher(HandlerPublisher):
             api_values += "&T=1"
 
         if preset == current_preset:
-            print("Already presented")
             return ""
 
         return api_values
