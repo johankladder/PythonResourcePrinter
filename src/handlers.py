@@ -43,23 +43,38 @@ class WLEDPublisher(HandlerPublisher):
 
     def handle(self, status: Status):
         if self.previous_status is not status:
-            self.network.get(
-                url=self.address + "/win" + self.__get_api_values(status),
+            response = self.network.get(
+                url=self.address + "/json",
                 handle=True
             )
-            self.previous_status = status
+
+            if response is not None:
+                self.network.get(
+                    url=self.address + "/win" + self.__get_api_values(
+                        status=status,
+                        is_on=response.json()['state']['on'] is True
+                    ),
+                    handle=True,
+                )
+
+        self.previous_status = status
 
     @staticmethod
-    def __get_api_values(status: Status) -> str:
+    def __get_api_values(status: Status, is_on: bool = False) -> str:
         color_map = {
-            Status.IDLE: "&R=0&G=255&B=0&FX=0",
-            Status.ERROR: "&R=255&G=0&B=0&FX=0",
-            Status.PRINTING: "&R=255&G=165&B=0&FX=74&SX=128&IX=100",
-            Status.PINGING: "&R=0&G=0&B=255&FX=0",
+            Status.IDLE: "&PL=2",
+            Status.ERROR: "&PL=3",
+            Status.PRINTING: "&PL=4",
+            Status.PINGING: "&PL=5",
             Status.OFF: "&T=0",
-            Status.ON: "&T=1&FX=50&SX=84&CL=h00FF00&C2=000000&C3=000000"
+            Status.ON: "&T=1&PL=5"
         }
-        return "&A=255" + color_map.get(status)
+
+        if status is not Status.ON:
+            if is_on is False:
+                return ""
+
+        return color_map.get(status)
 
 
 class StatusHandler:
