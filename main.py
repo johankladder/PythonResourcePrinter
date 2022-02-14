@@ -147,7 +147,7 @@ class CommandReceiver(object):
                 self.last_ping = current_time
                 self.status_handler.publish(status=Status.PINGING)
                 self.network.get(self.ping_url)
-                time.sleep(2.0)
+                time.sleep(5.0)
 
 
 if __name__ == '__main__':
