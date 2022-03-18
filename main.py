@@ -146,13 +146,11 @@ class CommandReceiver(object):
             current_time = datetime.datetime.now()
             minutes_passed = current_time - self.last_ping
             if minutes_passed.total_seconds() / 60 >= minutes:
-                print("Pinging")
+                print("Pinging...")
                 self.last_ping = current_time
                 self.status_handler.publish(status=Status.PINGING)
                 self.network.get(self.ping_url)
                 time.sleep(5.0)
-            else:
-                print("Normally would ping, but url is None")
 
 
 if __name__ == '__main__':
