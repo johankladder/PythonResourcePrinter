@@ -142,7 +142,7 @@ class CommandReceiver(object):
             print("Print mix:", len(paths) > 1 and paths[1] is not None and item.print_mix is True)
 
     def __ping(self, minutes: int):
-        if self.ping_url and self.debug is False:
+        if self.ping_url is not None and self.debug is False:
             current_time = datetime.datetime.now()
             minutes_passed = current_time - self.last_ping
             if minutes_passed.total_seconds() / 60 >= minutes:
