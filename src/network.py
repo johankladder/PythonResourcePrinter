@@ -8,7 +8,7 @@ class Network:
 
     def get(self, url: str, handle: bool = True) -> Optional[Response]:
         if handle is False:
-            return requests.get(url)
+            return requests.get(url, timeout=10)
 
         try:
             return requests.get(url)
@@ -17,7 +17,7 @@ class Network:
 
     def patch(self, url: str) -> Optional[Response]:
         try:
-            return requests.patch(url)
+            return requests.patch(url, timeout=10)
         except RequestException as e:
             return self.__handle_exception(url, e)
 
