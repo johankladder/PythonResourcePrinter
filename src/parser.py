@@ -48,7 +48,6 @@ class PdfParser:
             items_path = None
         else:
             with open(items_path, "wb") as outputStream:
-                print(output_pages)
                 output_base.write(outputStream)
 
         return [items_path, output_path]

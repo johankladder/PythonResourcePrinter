@@ -60,7 +60,7 @@ class CommandReceiver(object):
     def listen(self, delay=2, ping_minutes=5):
         print("Initialised printing server for url: ", self.queue_network.base_url)
         print("Print server started - polling every " + str(delay) + " seconds")
-        print("Polling url:" + str(self.ping_url))
+        print("Pinging url:" + str(self.ping_url))
         print("-------------------------------------------------")
 
         self.status_handler.publish(status=Status.ON)
