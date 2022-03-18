@@ -1,4 +1,5 @@
 from enum import Enum
+import datetime
 
 from src.network import Network
 
@@ -30,7 +31,7 @@ class DebugPublisher(HandlerPublisher):
 
         readable_status = messages.get(status)
         if readable_status is not None:
-            print("Debugging - status: " + readable_status)
+            print("Debugging - status: " + readable_status + " | " + datetime.datetime.now().strftime("%H:%M:%S"))
 
 
 class WLEDPublisher(HandlerPublisher):
