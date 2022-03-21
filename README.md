@@ -31,6 +31,7 @@ See the .env-example for possible values. In general this would be:
 PRINT_QUEUE_BASE_URL=https://api.printqueue.nl/get-queue
 AUTH_TOKEN=secret
 LP_OPTIONS=-o landscape -o fit-to-page -o media=Custom.102x152mm
+LP_OPTIONS_1=-o landscape -o fit-to-page -o media=Custom.102x149.5mm
 PING_URL=https://beats.envoyer.io/heartbeat/a-heart-beat-id
 PRINTER_LOCATION_DEFAULT=Brother
 PRINTER_LOCATION_[*]=
