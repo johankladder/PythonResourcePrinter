@@ -19,5 +19,6 @@ class QueueItem:
 
 
 class Printer:
-    def __init__(self, printer_id: str):
+    def __init__(self, printer_id: str, printer_location: str = None):
         self.printer_id = printer_id
+        self.printer_location = printer_location

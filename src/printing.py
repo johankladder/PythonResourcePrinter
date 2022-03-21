@@ -8,7 +8,7 @@ class Printing:
     @staticmethod
     def print(file_path: str, printer: Printer):
         printer_option = Printing.get_specific_printer_option(printer)
-        commands = ["lp", file_path, os.getenv("LP_OPTIONS") + printer_option]
+        commands = ["lp", file_path, Printing.get_general_printing_option(printer) + printer_option]
         command = " ".join(commands)
         os.system(command)
 
@@ -20,7 +20,7 @@ class Printing:
         if printer_location is not None:
             printer_id = os.getenv("PRINTER_LOCATION_" + str(printer_location), None)
             if printer_id is not None:
-                return Printer(printer_id=printer_id)
+                return Printer(printer_id=printer_id, printer_location=printer_location)
             else:
                 print("Cannot find printer location " + str(printer_location))
 
@@ -39,4 +39,17 @@ class Printing:
     @staticmethod
     def get_specific_printer_option(printer: Printer) -> str:
         return " -d " + printer.printer_id
+
+    @staticmethod
+    def get_general_printing_option(printer: Printer) -> str:
+        default_lp_options = os.getenv("LP_OPTIONS")
+        location = printer.printer_location
+
+        if location is not None:
+            location_lp_options = os.getenv("LP_OPTIONS_" + location)
+            if location_lp_options is not None:
+                return location_lp_options
+
+        # Fallback:
+        return default_lp_options
 
