@@ -48,6 +48,7 @@ class Printing:
         if location is not None:
             location_lp_options = os.getenv("LP_OPTIONS_" + location)
             if location_lp_options is not None:
+                print("Found specific options for printer...")
                 return location_lp_options
 
         # Fallback:
