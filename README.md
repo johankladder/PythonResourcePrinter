@@ -81,6 +81,11 @@ The status on will also force WLED to turn the lights on.
 ## Test wled:
 `python3 main.py wled [status]`
 
+## Test server:
+`python3 main.py test`
+
+This command will display the most needed values. It will also check if the server can fetch any items...
+
 
 ## Possible flags, see help:
 ```

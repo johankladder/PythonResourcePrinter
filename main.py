@@ -69,7 +69,7 @@ class CommandReceiver(object):
         while True:
             try:
                 queue_items = self.queue_network.get_queue()
-            except RequestException:
+            except RequestException as e:
                 self.status_handler.publish(status=Status.ERROR)
                 time.sleep(5.0)
                 continue
@@ -128,6 +128,33 @@ class CommandReceiver(object):
                     print("Printed item with id: " + str(item.id))
 
             time.sleep(delay)
+
+    def test(self):
+        print("Running the test command for the print server...")
+        print("------------------------------------------------")
+
+        # Test the API url:
+        api_url = os.getenv("PRINT_QUEUE_BASE_URL")
+        api_url
+        api_message = api_url if api_url else "ERROR"
+        print("API URL: ", api_message)
+        print("------------------------------------------------")
+
+        # Test the auth token
+        auth_token = os.getenv("AUTH_TOKEN")
+        auth_message = auth_token if auth_token else "ERROR"
+        print("AUTH TOKEN: ", auth_message)
+        print("------------------------------------------------")
+
+        # Test gathering queue-items
+        print("Trying to gather queue-items...")
+        try: 
+            items = self.queue_network.get_queue()
+            print("Fetching SUCCESS with " + str(len(items)) + " items")
+        except RequestException as e:
+            print("ERROR FETCHING")
+        print("------------------------------------------------")
+
 
     def __handle_print(self, pdf_path: str, printer: Printer):
         self.status_handler.publish(status=Status.PRINTING)
